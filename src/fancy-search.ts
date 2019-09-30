@@ -80,9 +80,11 @@ export default class FancySearch extends EventEmitter {
   }
 
   _focus() {
-    const notification = append()
     this._record()
+    const notification = append()
     notification.then(nr => nr.disable.then(this._disableRec.bind(this)))
+
+    setTimeout(remove, 3000)
   }
 
   _blur() {

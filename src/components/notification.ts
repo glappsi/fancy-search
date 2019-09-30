@@ -14,11 +14,15 @@ const Css = `
     background: rgba(0,0,0,0.7);
     box-shadow: 0 0 3px 0 rgba(0,0,0,0.7);
     color: #fff;
+    transition: opacity 0.3s;
   }
 
   #arly-ms.hidden {
-    z-index: -1;
     opacity: 0;
+  }
+
+  #arly-ms.gone {
+    z-index: -1;
   }
 
   .arly-ms-text {
@@ -82,7 +86,7 @@ export const append: () => Promise<INotificationResult> = () => {
         resolve(notificationEvents(getNotification()))
       })
     } else {
-      notification.classList.remove('hidden')
+      notification.classList.remove('hidden', 'gone')
       resolve(notificationEvents(notification))
     }
   })
@@ -92,5 +96,6 @@ export const remove = () => {
   const notification = getNotification()
   if (notification) {
     notification.classList.add('hidden')
+    setTimeout(() => notification.classList.add('gone'), 500)
   }
 }
