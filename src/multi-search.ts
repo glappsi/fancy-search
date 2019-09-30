@@ -10,7 +10,6 @@ import EventEmitter from 'event-emitter-es6'
 
 function fuzzyMatch(search: string, results: Array<any>, matchKey?: string) {
   const options: any = {
-    threshold: 0.5,
     shouldSort: true,
     includeScore: true
   }
@@ -22,9 +21,11 @@ function fuzzyMatch(search: string, results: Array<any>, matchKey?: string) {
   const fuzzyMatches: Array<any> = fuse.search(search)
   const exact =
     fuzzyMatches.find(m => m.score < 0.1) || (fuzzyMatches.length === 1 && fuzzyMatches[0])
-  if (exact) {
+  const singleFuzzyMatch = fuzzyMatches.length === 1 && fuzzyMatches[0]
+
+  if (exact || singleFuzzyMatch) {
     return {
-      exactMatch: exact.item
+      exactMatch: exact.item || singleFuzzyMatch.item
     }
   }
 
@@ -69,8 +70,6 @@ export default class MultiSearch extends EventEmitter {
 
       // set timeout to first call disable
       input.addEventListener('blur', this._blurFn)
-
-      this._record()
     }
 
     input.addEventListener('keyup', this._keyPressFn)
@@ -86,6 +85,7 @@ export default class MultiSearch extends EventEmitter {
 
   _focus() {
     const notification = append()
+    this._record()
     notification.then(nr => nr.disable.then(this._disableRec.bind(this)))
   }
 
@@ -119,6 +119,7 @@ export default class MultiSearch extends EventEmitter {
         .transcript.trim()
         .replace(/\s/g, ', ')
       this._input.value += this._input.value ? `, ${item}` : item
+      this._keyPress({ keyCode: 1, target: this._input })
     }
 
     this._recognition.start()
@@ -144,7 +145,11 @@ export default class MultiSearch extends EventEmitter {
 
       this.searching = true
       if (formatterFn) {
-        value = await formatterFn(value)
+        try {
+          value = await formatterFn(value)
+        } catch (e) {
+          console.warn('formatter failed with ', e)
+        }
       }
 
       const values = value
