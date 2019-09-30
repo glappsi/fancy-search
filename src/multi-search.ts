@@ -109,7 +109,6 @@ export default class MultiSearch extends EventEmitter {
     const SpeechRecognition =
       window.SpeechRecognition || ((window as any).webkitSpeechRecognition as SpeechRecognition)
     this._recognition = new SpeechRecognition()
-    this._recognition.continuous = true
     if (this._options.recLanguage) {
       this._recognition.lang = this._options.recLanguage
     }
@@ -118,8 +117,10 @@ export default class MultiSearch extends EventEmitter {
         .item(event.results.length - 1)[0]
         .transcript.trim()
         .replace(/\s/g, ', ')
-      this._input.value += this._input.value ? `, ${item}` : item
-      this._keyPress({ keyCode: 1, target: this._input })
+      this.searchItems = item.split(',').map(i => i.trim())
+      this._input.value = this._input.value ? `${this._input.value}, ${item}` : item
+      this._input.blur()
+      this.search()
     }
 
     this._recognition.start()
