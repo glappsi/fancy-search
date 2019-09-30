@@ -1,11 +1,11 @@
 {
-  "name": "@aurally/multi-search",
+  "name": "@aurally/fancy-search",
   "version": "0.0.0",
   "description": "",
   "keywords": [],
-  "main": "dist/multi-search.umd.js",
-  "module": "dist/multi-search.es5.js",
-  "typings": "dist/types/multi-search.d.ts",
+  "main": "dist/fancy-search.umd.js",
+  "module": "dist/fancy-search.es5.js",
+  "typings": "dist/types/fancy-search.d.ts",
   "files": [
     "dist"
   ],

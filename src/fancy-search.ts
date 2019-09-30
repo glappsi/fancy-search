@@ -4,10 +4,6 @@ import { ISearchResult } from './models/search-result'
 import { append, remove } from './components/notification'
 import EventEmitter from 'event-emitter-es6'
 
-// Import here Polyfills if needed. Recommended core-js (npm i -D core-js)
-// import "core-js/fn/array.find"
-// ...
-
 function fuzzyMatch(search: string, results: Array<any>, matchKey?: string) {
   const options: any = {
     shouldSort: true,
@@ -34,7 +30,7 @@ function fuzzyMatch(search: string, results: Array<any>, matchKey?: string) {
   }
 }
 
-export default class MultiSearch extends EventEmitter {
+export default class FancySearch extends EventEmitter {
   _options: IOptions
   _input: HTMLInputElement
   _focusFn = this._focus.bind(this)
