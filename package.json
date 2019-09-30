@@ -12,9 +12,9 @@
   "author": "Florian Glappa <glappa.js@gmail.com>",
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "git@github.com:glappsi/fancy-search.git"
   },
-  "license": "MIT",
+  "license": "GNU",
   "engines": {
     "node": ">=6.0.0"
   },
