@@ -15,6 +15,7 @@ const Css = `
     box-shadow: 0 0 3px 0 rgba(0,0,0,0.7);
     color: #fff;
     transition: opacity 0.3s;
+    text-align: left;
   }
 
   #arly-ms.hidden {
@@ -76,13 +77,16 @@ export interface INotificationResult {
   disable: Promise<any>
 }
 
-export const append: () => Promise<INotificationResult> = () => {
+export const append: (parentContainer: any) => Promise<INotificationResult> = (
+  parentContainer: any
+) => {
   return new Promise(resolve => {
     const notification = getNotification()
     if (!notification) {
       whenDomReady().then(() => {
         const language = (navigator as any).language || (navigator as any).userLanguage
-        document.body.insertAdjacentHTML('beforeend', Html(language))
+        const container: any = parentContainer || document.body
+        container.insertAdjacentHTML('beforeend', Html(language))
         resolve(notificationEvents(getNotification()))
       })
     } else {

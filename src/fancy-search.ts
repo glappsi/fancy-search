@@ -82,7 +82,7 @@ export default class FancySearch extends EventEmitter {
 
   _focus() {
     this._record()
-    const notification = append()
+    const notification = append(this._input.parentNode)
     notification.then(nr => nr.disable.then(this._disableRec.bind(this)))
 
     setTimeout(remove, 3000)

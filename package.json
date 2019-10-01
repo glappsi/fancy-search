@@ -1,6 +1,6 @@
 {
   "name": "@aurally/fancy-search",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A lib to improve your apps search functionality by adding the opt-outable speech recognition, multiple parallel searches and automatic result matching",
   "keywords": [
     "search",
