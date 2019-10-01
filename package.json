@@ -1,6 +1,6 @@
 {
   "name": "@aurally/fancy-search",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "",
   "keywords": [],
   "main": "dist/fancy-search.umd.js",
@@ -32,6 +32,7 @@
     "semantic-release": "semantic-release",
     "semantic-release-prepare": "ts-node tools/semantic-release-prepare",
     "precommit": "lint-staged",
+    "prepublish": "npm run build",
     "travis-deploy-once": "travis-deploy-once"
   },
   "lint-staged": {

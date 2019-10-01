@@ -73,7 +73,7 @@ function notificationEvents(notification: HTMLDivElement | null): INotificationR
 }
 
 export interface INotificationResult {
-  disable: Promise<void>
+  disable: Promise<any>
 }
 
 export const append: () => Promise<INotificationResult> = () => {

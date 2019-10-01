@@ -36,7 +36,7 @@ export default class FancySearch extends EventEmitter {
   _focusFn = this._focus.bind(this)
   _blurFn = () => setTimeout(this._blur.bind(this))
   _keyPressFn = this._keyPress.bind(this)
-  _recognition?: SpeechRecognition
+  _recognition?: any
   _alreadySearched: string[] = []
 
   searchItems: string[] = []
@@ -75,7 +75,8 @@ export default class FancySearch extends EventEmitter {
     // check if not disabled and speech _recognition available
     return (
       !window.sessionStorage.getItem('ARLY_DISABLE_REC') &&
-      (window.SpeechRecognition || window.hasOwnProperty('webkitSpeechRecognition'))
+      (window.hasOwnProperty('SpeechRecognition') ||
+        window.hasOwnProperty('webkitSpeechRecognition'))
     )
   }
 
@@ -105,24 +106,27 @@ export default class FancySearch extends EventEmitter {
 
   _record() {
     const SpeechRecognition =
-      window.SpeechRecognition || ((window as any).webkitSpeechRecognition as SpeechRecognition)
+      (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
     this._recognition = new SpeechRecognition()
-    this._recognition.continuous = true
-    if (this._options.recLanguage) {
-      this._recognition.lang = this._options.recLanguage
-    }
-    this._recognition.onresult = event => {
-      const item = event.results
-        .item(event.results.length - 1)[0]
-        .transcript.trim()
-        .replace(/\s/g, ', ')
-      this.searchItems = item.split(',').map(i => i.trim())
-      this._input.value = this._input.value ? `${this._input.value}, ${item}` : item
-      this._input.blur()
-      this.search()
-    }
 
-    this._recognition.start()
+    if (this._recognition) {
+      this._recognition.continuous = true
+      if (this._options.recLanguage) {
+        this._recognition.lang = this._options.recLanguage
+      }
+      this._recognition.onresult = (event: any) => {
+        const item = event.results
+          .item(event.results.length - 1)[0]
+          .transcript.trim()
+          .replace(/\s/g, ', ')
+        this.searchItems = item.split(',').map((i: string) => i.trim())
+        this._input.value = this._input.value ? `${this._input.value}, ${item}` : item
+        this._input.blur()
+        this.search()
+      }
+
+      this._recognition.start()
+    }
   }
 
   _disableRec() {
