@@ -107,6 +107,7 @@ export default class FancySearch extends EventEmitter {
     const SpeechRecognition =
       window.SpeechRecognition || ((window as any).webkitSpeechRecognition as SpeechRecognition)
     this._recognition = new SpeechRecognition()
+    this._recognition.continuous = true
     if (this._options.recLanguage) {
       this._recognition.lang = this._options.recLanguage
     }
@@ -133,13 +134,41 @@ export default class FancySearch extends EventEmitter {
     }, 500)
   }
 
+  _searchCompleted(search: string, original: string, results: any[]) {
+    const { valueKey } = this._options
+    const { exactMatch, closeMatches } = fuzzyMatch(search, results, valueKey)
+
+    if (exactMatch) {
+      this.exact.push({
+        search,
+        original,
+        result: exactMatch
+      })
+    } else if (closeMatches) {
+      this.close.push({
+        search,
+        original,
+        results: closeMatches
+      })
+    } else {
+      this.none.push({
+        search,
+        original,
+        results
+      })
+    }
+
+    const { exact, close, none } = this
+    this.emit('searched', { exact, close, none })
+  }
+
   public search(): Promise<ISearchResult> {
     if (!this.searchItems.length) {
       return Promise.resolve({ exact: [], close: [], none: [] })
     }
 
     return new Promise(async resolve => {
-      const { formatterFn, searchFn, valueKey } = this._options
+      const { formatterFn, searchFn } = this._options
       let { value } = this._input
 
       this.searching = true
@@ -155,39 +184,23 @@ export default class FancySearch extends EventEmitter {
         .split(',')
         .map(v => v.trim())
         .filter(v => !this._alreadySearched.includes(v))
+
       for (let i = 0; i < values.length; i++) {
         const search = values[i]
         const original = this.searchItems[i]
-        const results = await searchFn(search)
-        const { exactMatch, closeMatches } = fuzzyMatch(search, results, valueKey)
+        searchFn(search).then((results: any[]) => {
+          this._searchCompleted(search, original, results)
 
-        if (exactMatch) {
-          this.exact.push({
-            search,
-            original,
-            result: exactMatch
-          })
-        } else if (closeMatches) {
-          this.close.push({
-            search,
-            original,
-            results: closeMatches
-          })
-        } else {
-          this.none.push({
-            search,
-            original,
-            results
-          })
-        }
+          if (i === values.length - 1) {
+            const { exact, close, none } = this
+
+            this.searching = false
+            resolve({ exact, close, none })
+          }
+        })
       }
 
       this._alreadySearched = this._alreadySearched.concat(values)
-      this.searching = false
-
-      const { exact, close, none } = this
-      this.emit('searched', { exact, close, none })
-      resolve({ exact, close, none })
     })
   }
 
