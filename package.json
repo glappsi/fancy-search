@@ -1,8 +1,16 @@
 {
   "name": "@aurally/fancy-search",
   "version": "1.0.0",
-  "description": "",
-  "keywords": [],
+  "description": "A lib to improve your apps search functionality by adding the opt-outable speech recognition, multiple parallel searches and automatic result matching",
+  "keywords": [
+    "search",
+    "fancy",
+    "speech",
+    "multi search",
+    "speech recognition",
+    "input",
+    "matching"
+  ],
   "main": "dist/fancy-search.umd.js",
   "module": "dist/fancy-search.es5.js",
   "typings": "dist/types/fancy-search.d.ts",
@@ -20,7 +28,7 @@
   },
   "scripts": {
     "lint": "tslint  --project tsconfig.json -t codeFrame 'src/**/*.ts' 'test/**/*.ts'",
-    "prebuild": "rimraf dist",
+    "prebuild": "rm -rf dist",
     "build": "tsc --module commonjs && rollup -c rollup.config.ts && typedoc --out docs --target es6 --theme minimal --mode file src",
     "start": "rollup -c rollup.config.ts -w",
     "test": "jest --coverage",
