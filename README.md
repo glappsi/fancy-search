@@ -5,7 +5,7 @@
 A lib to improve your apps search functionality by adding the opt-outable speech recognition, multiple parallel searches and automatic result matching.
 Have a look at following example or try it at [munchlab.de](munchlab.de)
 
-![](munchlab.mp4)
+![](munchlab.gif)
 
 ## Speech recognition
 

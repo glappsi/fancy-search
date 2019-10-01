@@ -6,6 +6,5 @@ tsconfig.json
 tslint.json
 .travis.yml
 rollup.config.ts
-munchlab.mp4
 test
 .rpt2_cache
