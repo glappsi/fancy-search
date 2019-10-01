@@ -22,7 +22,7 @@
     "type": "git",
     "url": "git@github.com:glappsi/fancy-search.git"
   },
-  "license": "GNU",
+  "license": "GPLv3",
   "engines": {
     "node": ">=6.0.0"
   },
