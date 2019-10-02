@@ -3,7 +3,7 @@
 [![styled with prettier](https://img.shields.io/badge/styled_with-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
 
 A lib to improve your apps search functionality by adding the opt-outable speech recognition, multiple parallel searches and automatic result matching.
-Have a look at following example or try it at [munchlab.de](munchlab.de)
+Have a look at following example or try it at [https://munchlab.de](munchlab.de)
 
 ![](munchlab.gif)
 
