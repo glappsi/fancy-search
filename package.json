@@ -1,6 +1,6 @@
 {
   "name": "@aurally/fancy-search",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "A lib to improve your apps search functionality by adding the opt-outable speech recognition, multiple parallel searches and automatic result matching",
   "keywords": [
     "search",
@@ -93,6 +93,7 @@
   "devDependencies": {
     "@commitlint/cli": "^7.1.2",
     "@commitlint/config-conventional": "^7.1.2",
+    "@types/event-emitter-es6": "^1.1.0",
     "@types/jest": "^23.3.2",
     "@types/node": "^10.11.0",
     "colors": "^1.3.2",
@@ -123,14 +124,12 @@
     "tslint": "^5.11.0",
     "tslint-config-prettier": "^1.15.0",
     "tslint-config-standard": "^8.0.1",
-    "typedoc": "^0.12.0",
+    "typedoc": "^0.15.0",
     "typescript": "^3.0.3"
   },
   "dependencies": {
-    "@types/event-emitter-es6": "^1.1.0",
-    "@types/when-dom-ready": "^1.2.0",
+    "@aurally/speech-control": "^1.0.0",
     "event-emitter-es6": "^1.1.5",
-    "fuse.js": "^3.4.5",
-    "when-dom-ready": "^1.2.12"
+    "fuse.js": "^3.4.5"
   }
 }

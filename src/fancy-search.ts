@@ -1,8 +1,8 @@
 import Fuse from 'fuse.js'
 import { IOptions } from './models/options'
 import { ISearchResult } from './models/search-result'
-import { append, remove } from './components/notification'
 import EventEmitter from 'event-emitter-es6'
+import { SpeechControl, SpeechControlErrors } from '@aurally/speech-control'
 
 function fuzzyMatch(search: string, results: Array<any>, matchKey?: string) {
   const options: any = {
@@ -36,7 +36,7 @@ export default class FancySearch extends EventEmitter {
   _focusFn = this._focus.bind(this)
   _blurFn = () => setTimeout(this._blur.bind(this))
   _keyPressFn = this._keyPress.bind(this)
-  _recognition?: any
+  _speechControl = new SpeechControl()
   _alreadySearched: string[] = []
 
   searchItems: string[] = []
@@ -61,36 +61,30 @@ export default class FancySearch extends EventEmitter {
     this._options = options
     this._input = input
 
-    if (this._isRecEnabled()) {
+    if (this._speechControl.isEnabled()) {
       input.addEventListener('focus', this._focusFn)
 
       // set timeout to first call disable
       input.addEventListener('blur', this._blurFn)
+
+      this._speechControl.setNotification({ container: input.parentElement })
     }
 
     input.addEventListener('keyup', this._keyPressFn)
   }
 
-  _isRecEnabled() {
-    // check if not disabled and speech _recognition available
-    return (
-      !window.sessionStorage.getItem('ARLY_DISABLE_REC') &&
-      (window.hasOwnProperty('SpeechRecognition') ||
-        window.hasOwnProperty('webkitSpeechRecognition'))
-    )
-  }
-
   _focus() {
-    this._record()
-    const notification = append(this._input.parentNode)
-    notification.then(nr => nr.disable.then(this._disableRec.bind(this)))
-
-    setTimeout(remove, 3000)
+    this._speechControl
+      .start()
+      .subscribe(this._speechResult.bind(this), (err: SpeechControlErrors) => {
+        if (err === SpeechControlErrors.Disabled) {
+          this._speechRecDisabled()
+        }
+      })
   }
 
   _blur() {
-    remove()
-    this._recognition && this._recognition.stop()
+    this._speechControl.stop()
   }
 
   _keyPress(event: any) {
@@ -104,33 +98,18 @@ export default class FancySearch extends EventEmitter {
     }
   }
 
-  _record() {
-    const SpeechRecognition =
-      (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
-    this._recognition = new SpeechRecognition()
-
-    if (this._recognition) {
-      this._recognition.continuous = true
-      if (this._options.recLanguage) {
-        this._recognition.lang = this._options.recLanguage
-      }
-      this._recognition.onresult = (event: any) => {
-        const item = event.results
-          .item(event.results.length - 1)[0]
-          .transcript.trim()
-          .replace(/\s/g, ', ')
-        this.searchItems = item.split(',').map((i: string) => i.trim())
-        this._input.value = this._input.value ? `${this._input.value}, ${item}` : item
-        this._input.blur()
-        this.search()
-      }
-
-      this._recognition.start()
-    }
+  _speechResult(event: any) {
+    const item = event.results
+      .item(event.results.length - 1)[0]
+      .transcript.trim()
+      .replace(/\s/g, ', ')
+    this.searchItems = item.split(',').map((i: string) => i.trim())
+    this._input.value = this._input.value ? `${this._input.value}, ${item}` : item
+    this._input.blur()
+    this.search()
   }
 
-  _disableRec() {
-    window.sessionStorage.setItem('ARLY_DISABLE_REC', 'true')
+  _speechRecDisabled() {
     this._input.removeEventListener('focus', this._focusFn)
     this._input.removeEventListener('blur', this._blurFn)
     setTimeout(() => {
@@ -171,7 +150,7 @@ export default class FancySearch extends EventEmitter {
       return Promise.resolve({ exact: [], close: [], none: [] })
     }
 
-    return new Promise(async resolve => {
+    return new Promise(async (resolve, reject) => {
       const { formatterFn, searchFn } = this._options
       let { value } = this._input
 
@@ -189,19 +168,30 @@ export default class FancySearch extends EventEmitter {
         .map(v => v.trim())
         .filter(v => !this._alreadySearched.includes(v))
 
+      if (!values.length) {
+        this.searching = false
+      }
+
       for (let i = 0; i < values.length; i++) {
         const search = values[i]
         const original = this.searchItems[i]
-        searchFn(search).then((results: any[]) => {
-          this._searchCompleted(search, original, results)
+        searchFn(search).then(
+          (results: any[]) => {
+            this._searchCompleted(search, original, results)
 
-          if (i === values.length - 1) {
-            const { exact, close, none } = this
+            if (i === values.length - 1) {
+              const { exact, close, none } = this
 
-            this.searching = false
-            resolve({ exact, close, none })
+              this.searching = false
+              resolve({ exact, close, none })
+            }
+          },
+          () => {
+            if (i === values.length - 1) {
+              this.searching = false
+            }
           }
-        })
+        )
       }
 
       this._alreadySearched = this._alreadySearched.concat(values)
