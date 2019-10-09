@@ -199,6 +199,7 @@ export default class FancySearch extends EventEmitter {
   }
 
   public destroy() {
+    this._speechControl.stop()
     this._input.removeEventListener('keypress', this._keyPressFn)
   }
 }
