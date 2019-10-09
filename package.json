@@ -1,6 +1,6 @@
 {
   "name": "@aurally/fancy-search",
-  "version": "1.0.5",
+  "version": "1.0.7",
   "description": "A lib to improve your apps search functionality by adding the opt-outable speech recognition, multiple parallel searches and automatic result matching",
   "keywords": [
     "search",
@@ -127,8 +127,10 @@
     "typedoc": "^0.15.0",
     "typescript": "^3.0.3"
   },
+  "peerDependencies": {
+    "@aurally/speech-control": "^1.0.3"
+  },
   "dependencies": {
-    "@aurally/speech-control": "^1.0.0",
     "event-emitter-es6": "^1.1.5",
     "fuse.js": "^3.4.5"
   }
