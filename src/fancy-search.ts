@@ -36,6 +36,7 @@ export default class FancySearch extends EventEmitter {
   _focusFn = this._focus.bind(this)
   _blurFn = () => setTimeout(this._blur.bind(this))
   _keyPressFn = this._keyPress.bind(this)
+  _changeFn = this._change.bind(this)
   _speechControl = new SpeechControl()
   _alreadySearched: string[] = []
 
@@ -71,6 +72,7 @@ export default class FancySearch extends EventEmitter {
     }
 
     input.addEventListener('keyup', this._keyPressFn)
+    input.addEventListener('change', this._changeFn)
   }
 
   _focus() {
@@ -88,13 +90,16 @@ export default class FancySearch extends EventEmitter {
   }
 
   _keyPress(event: any) {
+    this._change(event)
     if (event.keyCode === 13) {
       this.search()
-    } else {
-      const value = event.target.value as string
-      if (value) {
-        this.searchItems = value.split(',').map(i => i.trim())
-      }
+    }
+  }
+
+  _change(event: any) {
+    const value = event.target.value as string
+    if (value) {
+      this.searchItems = value.split(',').map(i => i.trim())
     }
   }
 
@@ -146,6 +151,7 @@ export default class FancySearch extends EventEmitter {
   }
 
   public search(): Promise<ISearchResult> {
+    this.searchItems = this._input.value.split(',').map(i => i.trim())
     if (!this.searchItems.length) {
       return Promise.resolve({ exact: [], close: [], none: [] })
     }
@@ -201,5 +207,6 @@ export default class FancySearch extends EventEmitter {
   public destroy() {
     this._speechControl.stop()
     this._input.removeEventListener('keypress', this._keyPressFn)
+    this._input.removeEventListener('change', this._changeFn)
   }
 }
